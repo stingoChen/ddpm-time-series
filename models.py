@@ -9,8 +9,8 @@ class ResnetBlock(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.block1 = nn.Linear(144, 72)
-        self.block2 = nn.Linear(72, 144)
+        self.block1 = nn.Linear(step, 72)
+        self.block2 = nn.Linear(72, step)
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -22,7 +22,7 @@ class ResnetBlock(nn.Module):
 
 
 class PositionalEncoding(nn.Module):
-    def __init__(self, d_model=144, max_len=144):
+    def __init__(self, d_model=step, max_len=step):
         super(PositionalEncoding, self).__init__()
         pe = torch.zeros(max_len, d_model)
 
@@ -50,8 +50,8 @@ class diffusion(nn.Module):
         self.tanh = nn.Tanh()
         self.lrelu = nn.LeakyReLU(0.2)
         # ---------------------mlp layer-----------------------
-        self.mlp1 = nn.Linear(1, 144)
-        self.mlp2 = nn.Linear(1, 144)
+        self.mlp1 = nn.Linear(1, step)
+        self.mlp2 = nn.Linear(1, step)
         # --------------------Transformer block-----------------------
         self.encoder_layer = nn.TransformerEncoderLayer(d_model=step, nhead=8, dropout=self.dropout, batch_first=True)
         self.encoder_layer2 = nn.TransformerEncoderLayer(d_model=step, nhead=8, dropout=self.dropout, batch_first=True)
@@ -65,9 +65,9 @@ class diffusion(nn.Module):
         self.encoder_layer8 = nn.TransformerEncoderLayer(d_model=step, nhead=8, dropout=self.dropout, batch_first=True)
 
         # ------------------------embedding layer-----------------------------
-        self.embedding = nn.Embedding(f_step, 144)
-        self.embedding2 = nn.Embedding(f_step, 144)
-        self.embedding3 = nn.Embedding(f_step, 144)
+        self.embedding = nn.Embedding(f_step, step)
+        self.embedding2 = nn.Embedding(f_step, step)
+        self.embedding3 = nn.Embedding(f_step, step)
 
         # ---------------------------------------------------------
         self.resnet_x_min_block1 = ResnetBlock()  # [144, 144]
@@ -75,7 +75,7 @@ class diffusion(nn.Module):
         self.resnet_x_min_block3 = ResnetBlock()
         # ---------------------------------------------------------
 
-        self.fc5 = nn.Linear(144, 1)
+        self.fc5 = nn.Linear(step, 1)
 
     def forward(self, x, t, x_t_min_1):
         # x [batch, feature] -> [batch, feature, 1] for Transformer input
